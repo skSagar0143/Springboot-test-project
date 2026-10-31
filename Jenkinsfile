@@ -63,12 +63,16 @@ pipeline {
        stage('Deploy Application') {
         steps {
             sh '''
+                echo "Selected environment: ${DEPLOY_ENV}"
+                echo "Selected deployment port: ${DEPLOY_PORT}"
+    
                 docker rm -f springboot-test-app || true
     
                 docker run -d \
                     --name springboot-test-app \
                     --restart unless-stopped \
                     -p ${DEPLOY_PORT}:8080 \
+                    -e APP_ENV=${DEPLOY_ENV} \
                     "$DOCKERHUB_USERNAME/$IMAGE_NAME:$BUILD_NUMBER"
             '''
         }
