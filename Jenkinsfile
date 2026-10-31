@@ -60,6 +60,30 @@ pipeline {
                 '''
             }
         }
+        
+        stage('Verify Deployment') {
+            steps {
+                sh '''
+                    echo "Waiting for Spring Boot application..."
+
+                    for i in $(seq 1 30); do
+                        if curl -fsS http://host.docker.internal:8085/actuator/health; then
+                            echo ""
+                            echo "Application is healthy!"
+                            exit 0
+                        fi
+
+                        echo "Waiting... attempt $i"
+                        sleep 2
+                    done
+
+                    echo "Application health check failed!"
+                    docker logs springboot-test-app
+                    exit 1
+                '''
+            }
+        }
+
     }
 
     post {
