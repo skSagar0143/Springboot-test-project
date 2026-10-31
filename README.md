@@ -56,3 +56,4 @@ kubectl get services
 ```
 
 The Kubernetes Service is NodePort for local Docker Desktop Kubernetes practice.
+Testing automatic Jenkins CI/CD using GitHub Webhook.
