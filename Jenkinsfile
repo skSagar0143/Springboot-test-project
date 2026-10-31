@@ -2,12 +2,18 @@ pipeline {
     agent any
 
     parameters {
-        string(
-            name: 'DEPLOY_PORT',
-            defaultValue: '8085',
-            description: 'Enter the port for Spring Boot deployment'
-        )
-    }
+    string(
+        name: 'DEPLOY_PORT',
+        defaultValue: '8085',
+        description: 'Enter the port for Spring Boot deployment'
+    )
+
+    choice(
+        name: 'DEPLOY_ENV',
+        choices: ['DEV', 'TEST', 'PROD'],
+        description: 'Select deployment environment'
+    )
+}
 
     tools {
         maven 'Maven-3.9'
