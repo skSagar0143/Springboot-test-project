@@ -1,18 +1,18 @@
+
 pipeline {
     agent any
 
     tools {
-        // Configure this exact Maven name under Manage Jenkins > Tools.
         maven 'Maven-3.9'
     }
 
     environment {
-        // Replace with your Docker Hub username before enabling the push stage.
         DOCKERHUB_USERNAME = 'sksagarkr'
         IMAGE_NAME = 'springboot-test-project'
     }
 
     stages {
+
         stage('Checkout') {
             steps {
                 checkout scm
@@ -30,19 +30,7 @@ pipeline {
                 sh 'docker build -t $DOCKERHUB_USERNAME/$IMAGE_NAME:$BUILD_NUMBER .'
             }
         }
-stage('Deploy Application') {
-    steps {
-        sh '''
-            docker rm -f springboot-test-app || true
 
-            docker run -d \
-                --name springboot-test-app \
-                --restart unless-stopped \
-                -p 8085:8080 \
-                "$DOCKERHUB_USERNAME/$IMAGE_NAME:$BUILD_NUMBER"
-        '''
-    }
-}
         stage('Push to Docker Hub') {
             steps {
                 withCredentials([usernamePassword(
@@ -58,12 +46,27 @@ stage('Deploy Application') {
                 }
             }
         }
+
+        stage('Deploy Application') {
+            steps {
+                sh '''
+                    docker rm -f springboot-test-app || true
+
+                    docker run -d \
+                        --name springboot-test-app \
+                        --restart unless-stopped \
+                        -p 8085:8080 \
+                        "$DOCKERHUB_USERNAME/$IMAGE_NAME:$BUILD_NUMBER"
+                '''
+            }
+        }
     }
 
     post {
         success {
             echo 'CI/CD pipeline completed successfully.'
         }
+
         failure {
             echo 'Pipeline failed. Check the stage logs.'
         }
