@@ -8,7 +8,7 @@ pipeline {
 
     environment {
         // Replace with your Docker Hub username before enabling the push stage.
-        DOCKERHUB_USERNAME = 'YOUR_DOCKERHUB_USERNAME'
+        DOCKERHUB_USERNAME = 'sksagarkr'
         IMAGE_NAME = 'springboot-test-project'
     }
 
