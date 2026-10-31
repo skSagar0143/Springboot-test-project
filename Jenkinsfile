@@ -30,7 +30,19 @@ pipeline {
                 sh 'docker build -t $DOCKERHUB_USERNAME/$IMAGE_NAME:$BUILD_NUMBER .'
             }
         }
+stage('Deploy Application') {
+    steps {
+        sh '''
+            docker rm -f springboot-test-app || true
 
+            docker run -d \
+                --name springboot-test-app \
+                --restart unless-stopped \
+                -p 8085:8080 \
+                "$DOCKERHUB_USERNAME/$IMAGE_NAME:$BUILD_NUMBER"
+        '''
+    }
+}
         stage('Push to Docker Hub') {
             steps {
                 withCredentials([usernamePassword(
