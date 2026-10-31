@@ -54,19 +54,19 @@ pipeline {
             }
         }
 
-        stage('Deploy Application') {
-            steps {
-                sh '''
-                    docker rm -f springboot-test-app || true
-
-                    docker run -d \
-                        --name springboot-test-app \
-                        --restart unless-stopped \
-                        -p 8085:8080 \
-                        "$DOCKERHUB_USERNAME/$IMAGE_NAME:$BUILD_NUMBER"
-                '''
-            }
+       stage('Deploy Application') {
+        steps {
+            sh '''
+                docker rm -f springboot-test-app || true
+    
+                docker run -d \
+                    --name springboot-test-app \
+                    --restart unless-stopped \
+                    -p ${DEPLOY_PORT}:8080 \
+                    "$DOCKERHUB_USERNAME/$IMAGE_NAME:$BUILD_NUMBER"
+            '''
         }
+    }
         
         stage('Verify Deployment') {
             steps {
@@ -74,7 +74,7 @@ pipeline {
                     echo "Waiting for Spring Boot application..."
 
                     for i in $(seq 1 30); do
-                        if curl -fsS http://host.docker.internal:8085/actuator/health; then
+                        if curl -fsS http://host.docker.internal:${DEPLOY_PORT}/actuator/health; then
                             echo ""
                             echo "Application is healthy!"
                             exit 0
